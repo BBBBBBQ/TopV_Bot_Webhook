@@ -1,15 +1,20 @@
 require('dotenv').config();
 const axios = require('axios');
 const Discord = require('discord.js');
+const debug = require('debug')('myapp:debug');
 
 const webhook = new Discord.WebhookClient({ url: process.env.DISCORD_WEBHOOK_URL });
 
 async function fetchRecentlySoldNFTs() {
+  debug('Fetching data from Magic Eden API...');
+
   const response = await axios.get('https://api.magiceden.io/marketplace/recently_sold', {
     params: {
       limit: 100,
     },
   });
+
+  debug('Successfully fetched data from Magic Eden API');
 
   const currentTime = new Date().getTime();
   const fiveMinutesAgo = currentTime - 5 * 60 * 1000;
@@ -70,5 +75,6 @@ async function sendEmbedMessage(topTenProjects) {
     await sendEmbedMessage(topTenProjects);
   } catch (error) {
     console.error('Error fetching data or sending message:', error);
+    debug('Error fetching data or sending message:', error);
   }
 })();
